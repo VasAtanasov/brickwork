@@ -7,11 +7,14 @@ import java.util.Arrays;
 
 /**
  * Class used for reading and passing the input to main application class {@link
- * com.github.vasatanasov.brickwork.core.Brickwork}. Writing the output to the console.
+ * com.github.vasatanasov.brickwork.core.Brickwork}.
+ *
+ * Writes the output to the console.
  */
 public class Manager {
 
   private final InputReader reader;
+  private Brickwork brickwork;
   private int rows;
   private int cols;
 
@@ -32,7 +35,7 @@ public class Manager {
       String[] tokens = reader.readLine().split("\\s+");
       rows = Integer.parseInt(tokens[0]);
       cols = Integer.parseInt(tokens[1]);
-      Brickwork brickwork = Brickwork.init(rows, cols);
+      brickwork = Brickwork.init(rows, cols);
       int[][] input = readInput();
       brickwork.setFirstLayer(input);
       brickwork.setSecondLayer();
@@ -43,11 +46,13 @@ public class Manager {
     }
   }
 
+  public String toStringSecondLayer() {
+    return brickwork.getSecondLayer().toString();
+  }
+
   /**
    * Reads the first layer form the console and validates if the input number of rows and cols
    * matches the one given on the first line.
-   *
-   * <p>Sets the first layer to the main application class.
    *
    * @throws IOException
    * @throws IllegalArgumentException

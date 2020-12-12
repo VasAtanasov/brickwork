@@ -69,8 +69,8 @@ public class Layer {
   }
 
   /**
-   * Checks if the each brick half is in range of the layer, there is no brick placed on any of
-   * the halves yet and that it is not a whole brick.
+   * Checks if the each brick half of the brick to be placed is in range of the layer, there is no
+   * brick placed from the second layer yet and that it is not a whole brick.
    *
    * @param row
    * @param col
@@ -133,6 +133,6 @@ public class Layer {
       }
       output.append(rowOutput.toString().trim()).append(System.lineSeparator());
     }
-    return output.toString();
+    return output.toString().trim();
   }
 }

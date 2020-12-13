@@ -2,6 +2,9 @@ package com.github.vasatanasov.brickwork.core;
 
 import com.github.vasatanasov.brickwork.models.Layer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** Main application class contains the business logic for building the brick layers. */
 public class Brickwork {
 
@@ -181,5 +184,74 @@ public class Brickwork {
     }
 
     return isBrickPlaced;
+  }
+
+  private static final String ASTERISK = "*";
+  private static final String SPACE = " ";
+
+  public static String toPrettyString(Layer layer) {
+    StringBuilder sb = new StringBuilder();
+
+    for (int row = 0; row < layer.getRows(); row++) {
+      List<String> brickLine = new ArrayList<>();
+      StringBuilder separation = new StringBuilder();
+      brickLine.add(ASTERISK);
+      separation.append(ASTERISK);
+
+      for (int col = 0; col < layer.getCols() - 1; col++) {
+        int currentValue = layer.getValue(row, col);
+        int nextValue = layer.getValue(row, col + 1);
+
+        if (currentValue != nextValue) {
+          brickLine.add(String.valueOf(currentValue));
+          separation.append(SPACE);
+          if (currentValue >= 10) {
+            separation.append(SPACE);
+          }
+        } else {
+          brickLine.add(formatBrickValues(currentValue));
+          separation.append(ASTERISK.repeat(5));
+          col++;
+          if (col < layer.getCols() - 1) {
+            nextValue = layer.getValue(row, col + 1);
+          }
+        }
+        brickLine.add(ASTERISK);
+        separation.append(ASTERISK);
+
+        if (col == layer.getCols() - 2) {
+          brickLine.add(String.valueOf(nextValue));
+          brickLine.add(ASTERISK);
+          if (currentValue != nextValue) {
+            separation.append(SPACE);
+          }
+          separation.append(ASTERISK);
+        }
+      }
+      String brickLineString = String.join("", brickLine);
+
+      if (row == 0) {
+        sb.append(ASTERISK.repeat(brickLineString.length()));
+        sb.append(System.lineSeparator());
+      }
+
+      sb.append(brickLineString);
+      sb.append(System.lineSeparator());
+      if (row < layer.getRows() - 1) {
+        sb.append(separation).append(System.lineSeparator());
+      }
+
+      if (row == layer.getRows() - 1) {
+        sb.append(ASTERISK.repeat(brickLineString.length()));
+        sb.append(System.lineSeparator());
+      }
+    }
+
+    return sb.toString().trim();
+  }
+
+  private static String formatBrickValues(int value) {
+    if (value >= 10) return "" + value + " " + value;
+    return " " + value + " " + value + " ";
   }
 }

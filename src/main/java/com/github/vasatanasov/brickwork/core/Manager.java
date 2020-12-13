@@ -33,7 +33,8 @@ public class Manager {
    */
   public void run() {
     try {
-      System.out.print("Enter layers' dimension separated by space: ");
+      System.out.println("Enter layers' dimension (NxM) separated by space on the first line and");
+      System.out.println("then on each N row enter M columns separated by space.");
       String[] tokens = reader.readLine().split("\\s+");
       rows = Integer.parseInt(tokens[0]);
       cols = Integer.parseInt(tokens[1]);
@@ -41,7 +42,7 @@ public class Manager {
       int[][] input = readInput();
       brickwork.setFirstLayer(input);
       brickwork.setSecondLayer();
-      System.out.println(brickwork.getSecondLayer());
+      System.out.println(Brickwork.toPrettyString(brickwork.getSecondLayer()));
     } catch (IllegalArgumentException | IOException | ArrayIndexOutOfBoundsException i) {
       System.err.println("-1: No solution exists");
       throw new NoSolutionException();
@@ -63,7 +64,6 @@ public class Manager {
     int[][] input = new int[rows][];
     int row = 0;
     while (true) {
-      System.out.printf("Input row %d values separated by space or press enter to quit: ", row);
       int[] numbers =
           Arrays.stream(reader.readLine().split("\\s+"))
               .map(String::trim)

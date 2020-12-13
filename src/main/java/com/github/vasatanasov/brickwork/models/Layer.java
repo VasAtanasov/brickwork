@@ -26,6 +26,14 @@ public class Layer {
     return new Layer(rows, cols);
   }
 
+  public int getRows() {
+    return rows;
+  }
+
+  public int getCols() {
+    return cols;
+  }
+
   /**
    * Returns a value representing half of a brick from the layer
    *

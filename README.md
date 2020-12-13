@@ -9,7 +9,7 @@
 ##### Package and run the tests
 
 ```shell script
-mvn clean pacakte
+mvn clean package
 ```
 
 ##### Run the application:

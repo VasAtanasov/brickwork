@@ -1,5 +1,6 @@
 package com.github.vasatanasov.brickwork.core;
 
+import com.github.vasatanasov.brickwork.error.NoSolutionException;
 import com.github.vasatanasov.brickwork.io.InputReader;
 
 import java.io.IOException;
@@ -9,7 +10,7 @@ import java.util.Arrays;
  * Class used for reading and passing the input to main application class {@link
  * com.github.vasatanasov.brickwork.core.Brickwork}.
  *
- * Writes the output to the console.
+ * <p>Writes the output to the console.
  */
 public class Manager {
 
@@ -32,6 +33,7 @@ public class Manager {
    */
   public void run() {
     try {
+      System.out.print("Enter layers' dimension separated by space: ");
       String[] tokens = reader.readLine().split("\\s+");
       rows = Integer.parseInt(tokens[0]);
       cols = Integer.parseInt(tokens[1]);
@@ -41,8 +43,8 @@ public class Manager {
       brickwork.setSecondLayer();
       System.out.println(brickwork.getSecondLayer());
     } catch (IllegalArgumentException | IOException | ArrayIndexOutOfBoundsException i) {
-      System.err.println("-1: No solution");
-      System.exit(-1);
+      System.err.println("-1: No solution exists");
+      throw new NoSolutionException();
     }
   }
 
@@ -61,7 +63,7 @@ public class Manager {
     int[][] input = new int[rows][];
     int row = 0;
     while (true) {
-
+      System.out.printf("Input row %d values separated by space or press enter to quit: ", row);
       int[] numbers =
           Arrays.stream(reader.readLine().split("\\s+"))
               .map(String::trim)

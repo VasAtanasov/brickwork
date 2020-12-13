@@ -2,6 +2,7 @@ package com.github.vasatanasov.brickwork.core;
 
 import com.github.vasatanasov.brickwork.models.Layer;
 
+/** Main application class contains the business logic for building the brick layers. */
 public class Brickwork {
 
   // Integer arrays representing offsets by row and col for moving up, down, left and right in a
@@ -20,6 +21,13 @@ public class Brickwork {
     secondLayer = Layer.of(rows, cols);
   }
 
+  /**
+   * Static factory method for instantiating the class
+   *
+   * @param rows
+   * @param cols
+   * @return
+   */
   public static Brickwork init(int rows, int cols) {
     return new Brickwork(rows, cols);
   }
@@ -28,15 +36,26 @@ public class Brickwork {
     return secondLayer;
   }
 
+  /**
+   * Builds the first layer of bricks if valid bricks.
+   *
+   * @param input int array representing layer's layout.
+   */
   public void setFirstLayer(int[][] input) {
     for (int row = 0; row < rows; row++) {
       for (int col = 0; col < cols; col++) {
+        isValidNumber(input[row][col]);
+        checkBrickSpan(row, col, input);
         firstLayer.setValue(row, col, input[row][col]);
-        checkBrickSpan(row, col, firstLayer);
       }
     }
   }
 
+  /**
+   * Sets the second layer of bricks.
+   *
+   * @throws IllegalArgumentException if there is no chance to complete the layer.
+   */
   public void setSecondLayer() {
     while (!secondLayer.isComplete()) {
       if (!placeBricks()) {
@@ -46,26 +65,83 @@ public class Brickwork {
     }
   }
 
-  private void checkBrickSpan(int row, int col, Layer layer) {
-    int currentValue = layer.getValue(row, col);
+  /**
+   * Makes sure brick's value is positive integer
+   *
+   * @param value
+   * @throws IllegalArgumentException if value is less than 1
+   */
+  private void isValidNumber(int value) {
+    if (value <= 0) {
+      System.err.println("Brick's value must be more than or equal to 1.");
+      throw new IllegalArgumentException();
+    }
+  }
+
+  /**
+   * Helper method to make sure that the brick has exactly span of 2 row/col. First if there is a
+   * brick in any direction and second if there are no bricks with more than 2 row/col span.
+   *
+   * @param row
+   * @param col
+   * @param layer
+   * @throws IllegalArgumentException when no brick with 1x2 or 2x1 found.
+   */
+  private void checkBrickSpan(int row, int col, int[][] layer) {
+    int currentValue = layer[row][col];
+    isBrick(row, col, layer);
     for (int i = 0; i < 4; i++) {
       visitCell(row, rowOffset[i], col, colOffset[i], currentValue, 1, layer);
     }
   }
 
+  /**
+   * Helper method to make sure that there are two equal adjacent halves.
+   *
+   * @param row
+   * @param col
+   * @param layer
+   * @throws IllegalArgumentException when there is no adjacent half
+   */
+  private void isBrick(int row, int col, int[][] layer) {
+    for (int i = 0; i < 4; i++) {
+      int otherRow = row + rowOffset[i];
+      int otherCol = col + colOffset[i];
+      boolean isInRange = !outOfRange(otherRow, otherCol);
+      if (isInRange && layer[row][col] == layer[otherRow][otherCol]) {
+        return;
+      }
+    }
+
+    System.err.println("Invalid brick. It must have 2 equal halves");
+    throw new IllegalArgumentException();
+  }
+
+  /**
+   * Recursive method for visiting adjacent cells to find the span of the brick.
+   *
+   * @param row
+   * @param rowOffset
+   * @param col
+   * @param colOffset
+   * @param value
+   * @param occurrences
+   * @param layer
+   * @throws IllegalArgumentException when no brick with 1x2 or 2x1 found.
+   */
   private void visitCell(
-      int row, int rowOffset, int col, int colOffset, int value, int occurrences, Layer layer) {
+      int row, int rowOffset, int col, int colOffset, int value, int occurrences, int[][] layer) {
     int nextRow = row + rowOffset;
     int nextCol = col + colOffset;
     if (outOfRange(row, col) || outOfRange(nextRow, nextCol)) {
       return;
     }
-    int nextValue = layer.getValue(nextRow, nextCol);
+    int nextValue = layer[nextRow][nextCol];
     if (nextValue != value) {
       return;
     }
     if (++occurrences > 2) {
-      System.err.println("Brick with span more than 2 cells");
+      System.err.println("Invalid brick with span of more than 2 cells");
       throw new IllegalArgumentException();
     }
     visitCell(nextRow, rowOffset, nextCol, colOffset, value, occurrences, layer);
@@ -75,6 +151,14 @@ public class Brickwork {
     return (row < 0 || row >= rows) || (col < 0 || col >= cols);
   }
 
+  /**
+   * Method responsible for building the second layer. First it checks if brick can bi placed
+   * horizontally; first half is at layer[row][col], second half is at layer[row][col+1]. Then if
+   * not possible horizontally it tries to place it vertically; first half at layer[row][col],
+   * second half at layer[row-1][col].
+   *
+   * @return false if there is no possibility to place the brick in the second layer.
+   */
   public boolean placeBricks() {
     boolean isBrickPlaced = false;
 

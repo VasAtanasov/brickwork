@@ -1,8 +1,5 @@
 package com.github.vasatanasov.brickwork.models;
 
-import static com.github.vasatanasov.brickwork.utils.Validator.isInvalidAreaParam;
-import static com.github.vasatanasov.brickwork.utils.Validator.isOdd;
-
 /** Data structure representing area with 1x2 brick slots */
 public class Layer {
   private final int totalBricksSlots;
@@ -58,6 +55,15 @@ public class Layer {
     return totalBricks == totalBricksSlots;
   }
 
+  /**
+   * Sets the two halves on the layer.
+   *
+   * @param row
+   * @param col
+   * @param rowOffset
+   * @param colOffset
+   * @throws IllegalArgumentException if any half is out of layer's range
+   */
   public void placeBrick(int row, int col, int rowOffset, int colOffset) {
     checkRange(row, col);
     int otherHalfRow = row + rowOffset;
@@ -69,14 +75,14 @@ public class Layer {
   }
 
   /**
-   * Checks if the each brick half of the brick to be placed is in range of the layer, there is no
-   * brick placed from the second layer yet and that it is not a whole brick.
+   * Checks if the each brick's half to be placed is in range of the layer, there is no brick placed
+   * from the second layer yet and that it is not a whole brick.
    *
    * @param row
    * @param col
    * @param rowOffset
    * @param colOffset
-   * @return
+   * @return true if there are 2 different halves
    */
   public boolean canPlaceBrick(int row, int col, int rowOffset, int colOffset) {
     checkRange(row, col);
@@ -88,6 +94,16 @@ public class Layer {
     return layer[row][col] != layer[otherHalfRow][otherHalfCol];
   }
 
+  /**
+   * Mark the values as negatives when there is brick placed on top so that we no it is not valid
+   * position for other bricks from the same layer
+   *
+   * @param row
+   * @param col
+   * @param rowOffset
+   * @param colOffset
+   * @throws IllegalArgumentException if any half is out of layer's range
+   */
   public void markAsPlaced(int row, int col, int rowOffset, int colOffset) {
     checkRange(row, col);
     int otherHalfRow = row + rowOffset;
@@ -99,7 +115,7 @@ public class Layer {
 
   private void setRows(int rows) {
     if (isInvalidAreaParam(rows) || isOdd(rows)) {
-      System.err.println("Rows must be between 2 and 100 inclusive and must be even number");
+      System.err.println("Rows must be even number and less than 100");
       throw new IllegalArgumentException();
     }
     this.rows = rows;
@@ -107,7 +123,7 @@ public class Layer {
 
   private void setCols(int cols) {
     if (isInvalidAreaParam(cols) || isOdd(cols)) {
-      System.err.println("Columns must be between 2 and 100 inclusive and must be even number");
+      System.err.println("Columns must be even number and less than 100");
       throw new IllegalArgumentException();
     }
     this.cols = cols;
@@ -121,6 +137,14 @@ public class Layer {
 
   private boolean outOfRange(int row, int col) {
     return (row < 0 || row >= rows) || (col < 0 || col >= cols);
+  }
+
+  private boolean isOdd(int num) {
+    return num % 2 != 0;
+  }
+
+  private boolean isInvalidAreaParam(int i) {
+    return i < 2 || i >= 100;
   }
 
   @Override

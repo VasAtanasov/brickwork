@@ -155,7 +155,7 @@ public class Brickwork {
   }
 
   /**
-   * Method responsible for building the second layer. First it checks if brick can bi placed
+   * Method responsible for building the second layer. First it checks if brick can be placed
    * horizontally; first half is at layer[row][col], second half is at layer[row][col+1]. Then if
    * not possible horizontally it tries to place it vertically; first half at layer[row][col],
    * second half at layer[row-1][col].
